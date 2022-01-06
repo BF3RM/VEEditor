@@ -1,5 +1,5 @@
 
-return json.decode([[
+return [[
 {
 	"CharacterLighting": {
         "CharacterLightEnable": "true",
@@ -192,8 +192,8 @@ return json.decode([[
         "WindDirection": "211.25799560547",
         "WindStrength": "1.7"
     },
-    "Name": "CinematicTools",
+    "Name": "EditorLayer",
     "Priority": "10",
     "Visibility": "1"
 }
-]])
+]]

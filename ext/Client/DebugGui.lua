@@ -14,7 +14,7 @@ Events:Subscribe("Level:Loaded", function()
 end)
 
 Events:Subscribe("Player:UpdateInput", function()
-	if InputManager:WentKeyDown(VEE_CONFIG.EDITOR_ENABLE_KEY) then --TODO: ADD TO VEE CONFIG
+	if InputManager:WentKeyDown(VEE_CONFIG.EDITOR_MOUSE_ENABLE_KEY) then --TODO: ADD TO VEE CONFIG
 		mouseDisabled = not mouseDisabled
 
 		if mouseDisabled then
@@ -22,6 +22,14 @@ Events:Subscribe("Player:UpdateInput", function()
 			WebUI:ResetKeyboard()
 		else
 			WebUI:EnableMouse()
+		end
+	end
+
+	if InputManager:WentKeyDown(VEE_CONFIG.EDITOR_TOGGLE_KEY) then
+		if VEEditor.m_Visible then
+			VEEditor:HideUI()
+		else
+			VEEditor:ShowUI()
 		end
 	end
 end)

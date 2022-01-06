@@ -1,11 +1,18 @@
+local m_Logger = Logger("VEEditorInit", false)
+
 -- require editorLayer Preset
 local m_EditorLayer = require('EditorLayer')
 
 -- require VEEditor
 local m_Editor = require('VEEditor')
 
--- Send Preset to VEManager
-Events:Dispatch('VEManager:RegisterPreset', m_EditorLayer)
+-- require DebugGUI Client Script
+local m_DebugGUI = require('DebugGUI')
+
+Events:Subscribe('Level:LoadResources', function(levelName, gameMode, isDedicatedServer)
+    -- Send Preset to VEManager
+	Events:Dispatch('VEManager:RegisterPreset', 'EditorLayer', m_EditorLayer)
+end)
 
 -- Grab Textures from Partitions
 g_TextureAssets = {}
