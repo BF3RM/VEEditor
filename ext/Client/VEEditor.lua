@@ -1166,7 +1166,7 @@ function VEEditor:CreateGUI()
 				end
 			elseif s_Enabled == true then
 				local s_Hour = s_Rounded * 3600
-				m_Time:Add(s_Hour, true, 86400)
+				Events:Dispatch('TimeServer:AddTime', s_Hour, true, 86400)
 			end
 		end)
 
@@ -1210,7 +1210,7 @@ function VEEditor:ParseJSON()
 
 	--Foreach class
 	local componentCount = 0
-	for _, l_Class in pairs(g_VEManagerClient.m_SupportedClasses) do
+	for _, l_Class in pairs(self.m_SupportedClasses) do
 
 		if self.m_CineState[firstToLower(l_Class)] ~= nil then
 			-- Create class and add it to the VE entity.
@@ -1312,6 +1312,35 @@ function VEEditor:ParseValue(p_Type, p_Value)
 		Logger:Write("Unhandled type: " .. p_Type)
 		return nil
 	end
+end
+
+function firstToLower(str)
+	return (str:gsub("^%L", string.lower))
+end
+
+function IsBasicType( typ )
+	if typ == "CString" or
+	typ == "Float8" or
+	typ == "Float16" or
+	typ == "Float32" or
+	typ == "Float64" or
+	typ == "Int8" or
+	typ == "Int16" or
+	typ == "Int32" or
+	typ == "Int64" or
+	typ == "Uint8" or
+	typ == "Uint16" or
+	typ == "Uint32" or
+	typ == "Uint64" or
+	typ == "LinearTransform" or
+	typ == "Vec2" or
+	typ == "Vec3" or
+	typ == "Vec4" or
+	typ == "Boolean" or
+	typ == "Guid" then
+		return true
+	end
+	return false
 end
 
 return VEEditor()
