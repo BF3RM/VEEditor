@@ -59,10 +59,8 @@ function VEEditor:RegisterEvents()
 end
 
 function VEEditor:OnPresetsLoaded()
-	if VEE_CONFIG.LOAD_CINEMATIC_TOOLS then
-		Events:Dispatch("VEManager:EnablePreset", "EditorLayer")
-		Events:Dispatch("VEManager:RequestVEGuid", "EditorLayer")
-	end
+	Events:Dispatch("VEManager:EnablePreset", "EditorLayer")
+	Events:Dispatch("VEManager:RequestVEGuid", "EditorLayer")
 
 	if VEE_CONFIG.SHOW_EDITOR_ON_LEVEL_LOAD then
 		self:ShowUI()
