@@ -13,7 +13,32 @@ function VEEditor:__init()
 end
 
 function VEEditor:RegisterVars()
+	self.m_SupportedTypes = {"Vec2", "Vec3", "Vec4", "Float32", "Boolean", "Int"}
+	self.m_SupportedClasses = {
+		"CameraParams",
+		"CharacterLighting",
+		"ColorCorrection",
+		"DamageEffect",
+		"Dof",
+		"DynamicAO",
+		"DynamicEnvmap",
+		"Enlighten",
+		"FilmGrain",
+		"Fog",
+		"LensScope",
+		"MotionBlur",
+		"OutdoorLight",
+		"PlanarReflection",
+		"ScreenEffect",
+		"Sky",
+		"SunFlare",
+		"Tonemap",
+		"Vignette",
+		"Wind"
+	}
+
 	self.m_CineState = nil
+	self.m_CineEntityGUID = nil
 	self.m_CinePriority = 10000010
 	self.m_PresetName = nil
 	self.m_PresetPriority = nil
@@ -26,15 +51,17 @@ function VEEditor:RegisterVars()
 end
 
 function VEEditor:RegisterEvents()
-	self.m_PresetsLoadEvent = Events:Subscribe('VEManager:PresetsLoaded', self, self.OnPresetsLoaded)
-	self.m_DataFromServer = NetEvents:Subscribe('VEEditor:DataToClient', self, self.OnDataFromServer)
-	self.m_ShowUIEvent = NetEvents:Subscribe('VEEditor:ShowUI', self, self.ShowUI)
-	self.m_HideUIEvent = NetEvents:Subscribe('VEEditor:HideUI', self, self.HideUI)
+	Events:Subscribe('VEManager:PresetsLoaded', self, self.OnPresetsLoaded)
+	Events:Subscribe('VEManager:AnswerVEGuidRequest', self, self.OnVEGuidReceived)
+	NetEvents:Subscribe('VEEditor:DataToClient', self, self.OnDataFromServer)
+	NetEvents:Subscribe('VEEditor:ShowUI', self, self.ShowUI)
+	NetEvents:Subscribe('VEEditor:HideUI', self, self.HideUI)
 end
 
 function VEEditor:OnPresetsLoaded()
 	if VEE_CONFIG.LOAD_CINEMATIC_TOOLS then
 		Events:Dispatch("VEManager:EnablePreset", "EditorLayer")
+		Events:Dispatch("VEManager:RequestVEGuid", "EditorLayer")
 	end
 
 	if VEE_CONFIG.SHOW_CINEMATIC_TOOLS_ON_LEVEL_LOAD then
@@ -42,6 +69,10 @@ function VEEditor:OnPresetsLoaded()
 	else
 		self:HideUI()
 	end
+end
+
+function VEEditor:OnVEGuidReceived(p_Guid)
+	self.m_CineEntityGUID = p_Guid
 end
 
 function VEEditor:OnDataFromServer(p_Path, p_Value, p_Net)
@@ -141,8 +172,12 @@ function VEEditor:GenericCallback(p_Path, p_Value, p_Net)
 			Logger:Write('TextureAsset found')
 
 			if s_PathTable[1] == 'sky' then
-				local s_ReceivedVE = Events:Subscribe("VEManager:RequestVE", "EditorLayer") --TODO: ADD VEMANAGER EVENT
-				Events:Dispatch("VEManager:RequestVE", "EditorLayer")
+
+				if self.m_CineEntityGUID == nil then
+					Events:Dispatch("VEManager:RequestVEGuid", "EditorLayer")
+				end
+
+				local s_ReceivedVE = ResourceManager:SearchForInstanceByGuid(Guid(self.m_CineEntityGUID))
 
 				for _, l_Class in pairs(s_ReceivedVE.components) do
 
@@ -158,7 +193,7 @@ function VEEditor:GenericCallback(p_Path, p_Value, p_Net)
 			end
 
 			-- Reload Entity
-			Events:Dispatch('VEManager:Reload', 'EditorLayer') -- TODO: ADD VEMANAGER EVENT
+			Events:Dispatch('VEManager:Reload', 'EditorLayer')
 		end
 	end
 
@@ -175,7 +210,7 @@ function VEEditor:SendForCollaboration(p_Path, p_Value)
 	NetEvents:Send('VEEditor:CollaborationData', p_Path, p_Value)
 end
 
--- TODO Automate through typeInfo
+-- TODO: Automate through typeInfo
 function VEEditor:CreateGUI()
 	Logger:Write("*Creating GUI for VEEditor")
 	-- Sky
@@ -1106,7 +1141,7 @@ function VEEditor:CreateGUI()
 		DebugGUI:Checkbox('Enable', false, function(p_Value)
 			if p_Value == true then
 				s_Enabled = true
-				Events:Dispatch('VEManager:AddTime', 43200, true, 86400)		--TODO: Add Event to VEM
+				Events:Dispatch('TimeServer:AddTime', 43200, true, 86400)
 			elseif p_Value == false and s_Enabled == true then
 				s_Enabled = false
 				NetEvents:Send('TimeServer:DisableNet')
@@ -1142,13 +1177,11 @@ function VEEditor:CreateGUI()
 
 		DebugGUI:Text('Load Preset', 'Insert JSON String here', function(p_Preset)
 			local s_Decoded = json.decode(p_Preset)
-			Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')	-- TODO: Add Event to VEManager
-			--g_VEManagerClient.m_Presets["EditorLayer"].ve = nil
-			--g_VEManagerClient.m_Presets["EditorLayer"].entity:Destroy()
+			Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')
 			s_Decoded.Name = "EditorLayer"
 			s_Decoded.Priority = 10
-			Events:Dispatch('VEManager:ReplaceVE', 'EditorLayer', s_Decoded)		-- TODO: Add Event to VEManager
-			Events:Dispatch('VEManager:ReloadPresets')		-- TODO: Add Event to VEManager
+			Events:Dispatch('VEManager:ReplaceVE', 'EditorLayer', s_Decoded)
+			Events:Dispatch('VEManager:Reinitialize')
 			self.m_CineStateReloaded = true
 		end)
 
