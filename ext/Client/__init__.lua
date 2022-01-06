@@ -1,4 +1,4 @@
-local m_Logger = Logger("VEEditorInit", false)
+local m_Logger = Logger("Init", false)
 
 -- require editorLayer Preset
 local m_EditorLayer = require('EditorLayer')

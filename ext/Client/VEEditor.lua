@@ -38,6 +38,7 @@ function VEEditor:RegisterVars()
 	}
 
 	self.m_CineState = nil
+	self.m_CineVE = nil
 	self.m_CineEntityGUID = nil
 	self.m_CinePriority = 10000010
 	self.m_PresetName = nil
@@ -71,6 +72,7 @@ end
 
 function VEEditor:OnVEGuidReceived(p_Guid)
 	self.m_CineEntityGUID = p_Guid
+	self.m_CineVE = ResourceManager:SearchForInstanceByGuid(self.m_CineEntityGUID)
 end
 
 function VEEditor:OnDataFromServer(p_Path, p_Value, p_Net)
@@ -170,28 +172,10 @@ function VEEditor:GenericCallback(p_Path, p_Value, p_Net)
 			m_Logger:Write('TextureAsset found')
 
 			if s_PathTable[1] == 'sky' then
-
-				if self.m_CineEntityGUID == nil then
-					Events:Dispatch("VEManager:RequestVEGuid", "EditorLayer")
-				end
-
-				local s_ReceivedVE = ResourceManager:SearchForInstanceByGuid(Guid(self.m_CineEntityGUID))
-
-				for _, l_Class in pairs(s_ReceivedVE.components) do
-
-					if l_Class.typeInfo.name == "SkyComponentData" then
-						local s_Class = SkyComponentData(l_Class)
-						s_Class:MakeWritable()
-						s_Class[s_PathTable[2]] = p_Value
-						m_Logger:Write('Applying New Texture')
-					end
-				end
+				Events:Dispatch("VEManager:ApplyTexture", "EditorLayer", self.selectedTexture.instanceGuid, s_PathTable[2])
 			else
 				error('Faulty Texture')
 			end
-
-			-- Reload Entity
-			Events:Dispatch('VEManager:Reload', 'EditorLayer')
 		end
 	end
 
@@ -1124,6 +1108,7 @@ function VEEditor:CreateGUI()
 				m_Logger:Write('Texture not Valid')
 				return
 			end
+
 			self:GenericCallback(self.selectedTextureDestination, self.selectedTexture)
 			self.m_CineStateReloaded = true
 		end)
