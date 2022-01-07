@@ -5,5 +5,9 @@
 	"URL": "https://github.com/BF3RM/VEEditor",
 	"Version": "0.0.1",
 	"HasWebUI": true,
-	"HasVeniceEXT": true
+	"HasVeniceEXT": true,
+	"Tags": ["VEEditor"],
+	"Dependencies": {
+		"VEManager": "^0.2.3"
+	}
 }
