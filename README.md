@@ -4,9 +4,10 @@ A Visual Environment Editor for Venice Unleashed.
 It's used to create, save and load VE presets.
 
 ## Youtube Tutorial Series
-https://www.youtube.com/watch?v=QYPJ4MNQbos&list=PLqlU85EO4crIPxk10YXiKDXE67lU-dM4m
+https://youtube.com/playlist?list=PLqlU85EO4crIPxk10YXiKDXE67lU-dM4m
 
 If you have questions contact IllustrisJack#5355 on Discord.
+Please report issues, requests into the Github Issues tab. Thank you!
 
 ## Config Options (Shared/Config.lua):
 	A number of features can be switched on/off from the config file located at Shared/Config.lua
