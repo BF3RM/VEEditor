@@ -6,7 +6,7 @@
 	"Version": "0.0.1",
 	"HasWebUI": true,
 	"HasVeniceEXT": true,
-	"Tags": ["VEEditor"],
+	"Tags": ["ve-editor"],
 	"Dependencies": {
 		"VEManager": "^0.2.3"
 	}
