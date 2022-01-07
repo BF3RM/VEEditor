@@ -9,6 +9,9 @@ https://youtube.com/playlist?list=PLqlU85EO4crIPxk10YXiKDXE67lU-dM4m
 If you have questions contact IllustrisJack#5355 on Discord.
 Please report issues, requests into the Github Issues tab. Thank you!
 
+### ! Dependency !
+VEEditor relies on [VEManager](https://github.com/BF3RM/VEManager) to work.
+
 ## Config Options (Shared/Config.lua):
 	A number of features can be switched on/off from the config file located at Shared/Config.lua
 
