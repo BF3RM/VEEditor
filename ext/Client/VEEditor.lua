@@ -82,13 +82,13 @@ function VEEditor:OnDataFromServer(p_Path, p_Value, p_Net)
 end
 
 function VEEditor:ShowUI()
-	Events:Dispatch("VEManager:UpdateVisibility", "EditorLayer", 10, 1.0)
+	Events:Dispatch("VEManager:UpdateVisibility", "EditorLayer", 1.0)
 	DebugGUI:ShowUI()
 	self.m_Visible = true
 end
 
 function VEEditor:HideUI()
-	Events:Dispatch("VEManager:UpdateVisibility", "EditorLayer", 10, 0.0)
+	Events:Dispatch("VEManager:UpdateVisibility", "EditorLayer", 0.0)
 	DebugGUI:HideUI()
 	self.m_Visible = false
 end
