@@ -235,19 +235,19 @@ function VEEditor:CreateGUI()
 		end)
 
 		DebugGUI:Range('Panoramic UV Min X', {DefValue = 0, Min = 0, Max = 10, Step = 0.5}, function(p_Value)
-			self:GenericCallback("sky.panoramicUVMinX.x", p_Value)
+			self:GenericCallback("sky.panoramicUVMinX", p_Value)
 		end)
 
 		DebugGUI:Range('Panoramic UV Max X', {DefValue = 0, Min = 0, Max = 10, Step = 0.5}, function(p_Value)
-			self:GenericCallback("sky.panoramicUVMaxX.x", p_Value)
+			self:GenericCallback("sky.panoramicUVMaxX", p_Value)
 		end)
 
 		DebugGUI:Range('Panoramic UV Min Y', {DefValue = 0, Min = 0, Max = 10, Step = 0.5}, function(p_Value)
-			self:GenericCallback("sky.panoramicUVMinY.y", p_Value)
+			self:GenericCallback("sky.panoramicUVMinY", p_Value)
 		end)
 
 		DebugGUI:Range('Panoramic UV Max Y', {DefValue = 0, Min = 0, Max = 10, Step = 0.5}, function(p_Value)
-			self:GenericCallback("sky.panoramicUVMaxY.y", p_Value)
+			self:GenericCallback("sky.panoramicUVMaxY", p_Value)
 		end)
 
 		DebugGUI:Range('Panoramic Tile Factor', {DefValue = 0.25, Min = 0, Max = 100, Step = self.VALUE_STEP}, function(p_Value)
