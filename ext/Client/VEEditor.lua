@@ -1065,11 +1065,30 @@ function VEEditor:CreateGUI()
 	-- Textures
 	DebugGUI:Folder('Textures (BEWARE: EXPERIMENTAL FEATURE - SAVE BEFORE TRYING)', function ()
 
-		DebugGUI:Text('Texture GUID', 'Enter GUID here', function(p_TextureGUID)
+		DebugGUI:Text('Manual Texture by GUID', 'Enter GUID here', function(p_TextureGUID)
 			self.selectedTexture = TextureAsset(ResourceManager:SearchForInstanceByGuid(Guid(p_TextureGUID)))
 		end)
 
-		DebugGUI:Range('Loaded Texture index', {DefValue = 0, Min = 1, Max = 100, Step = 1}, function(p_Value)
+		DebugGUI:Text('Manual Texture by Name', 'Enter Name here', function(p_TextureName)
+			for l_Key, l_Value in pairs(g_TextureAssets) do
+				if string.find(l_Key, p_TextureName) then
+					self.selectedTexture = TextureAsset(l_Value)
+				end
+			end
+			
+		end)
+
+		DebugGUI:Text('Search Loaded Textures', 'Enter Search Parameter here', function(p_SearchParameter)
+			print("*-- Search Start --")
+			for l_Key, l_Value in pairs(g_TextureAssets) do
+				if string.find(l_Key, p_SearchParameter) then
+					print("Matching Texture: " .. l_Key)
+				end
+			end
+			print("*-- Search End --")
+		end)
+
+		DebugGUI:Range('Loaded Texture index', {DefValue = 0, Min = 1, Max = 500, Step = 1}, function(p_Value)
 			-- Make sure value is int
 			p_Value = math.floor(p_Value)
 
