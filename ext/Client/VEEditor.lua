@@ -1075,7 +1075,6 @@ function VEEditor:CreateGUI()
 					self.selectedTexture = TextureAsset(l_Value)
 				end
 			end
-			
 		end)
 
 		DebugGUI:Text('Search Loaded Textures', 'Enter Search Parameter here', function(p_SearchParameter)
