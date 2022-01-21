@@ -1220,6 +1220,8 @@ function VEEditor:ParseJSON()
 
 					if IsBasicType(s_Type) then
 						s_Value = self:ParseValue(s_Type, self.m_CineState[firstToLower(l_Class)][firstToLower(s_FieldName)])
+					elseif s_Type == "TextureAsset" then
+						s_Value = "\"" .. TextureAsset(self.m_CineState[firstToLower(l_Class)][firstToLower(s_FieldName)]).name .. "\""
 					elseif l_Field.typeInfo.enum then
 						s_Value = "\"" .. tostring(self.m_CineState[firstToLower(l_Class)][firstToLower(s_FieldName)]) .. "\""
 					elseif l_Field.typeInfo.array then
