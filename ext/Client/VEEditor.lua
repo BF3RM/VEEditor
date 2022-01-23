@@ -2,7 +2,7 @@
 VEEditor = class 'VEEditor'
 
 ---@type Logger
-local m_Logger = Logger("Editor", false)
+local m_Logger = Logger("Editor", true)
 
 
 function VEEditor:__init()
@@ -38,6 +38,7 @@ function VEEditor:RegisterVars()
 	}
 
 	self.m_CineState = nil
+	self.m_DefaultState = nil
 	self.m_CineVE = nil
 	self.m_CineEntityGUID = nil
 	self.m_CinePriority = 10000010
@@ -49,6 +50,7 @@ function VEEditor:RegisterVars()
 	self.VALUE_MIN = -25000
 	self.VALUE_MAX = 25000
 	self.m_CineStateReloaded = false
+	self.m_ResetConfirmed = false
 end
 
 function VEEditor:RegisterEvents()
@@ -67,6 +69,16 @@ function VEEditor:OnPresetsLoaded()
 		self:ShowUI()
 	else
 		self:HideUI()
+	end
+
+	-- Get CineState & Default State
+	if self.m_CineState == nil then
+		self.m_CineState = self:GetVisualEnvironmentState(self.m_CinePriority)
+		m_Logger:Write('CineState Name: ' .. self.m_CineState.entityName)
+		m_Logger:Write('CineState ID: ' .. self.m_CineState.stateId)
+		m_Logger:Write('CineState Priority: ' .. self.m_CineState.priority)
+		self.m_CineState.excluded = false
+		VisualEnvironmentManager:SetDirty(true)
 	end
 end
 
@@ -112,11 +124,12 @@ function VEEditor:GetVisualEnvironmentState(...)
 	local states = VisualEnvironmentManager:GetStates()
 	--Loop through all states
 	for _, state in pairs(states) do
-		if state.entityName ~= "EffectEntity" then --sets main ve to 1
-			state.priority = 1
-		end
+		m_Logger:Write(state.priority .. ' | ' .. state.visibility .. ' | ' .. state.entityName)
 
-		m_Logger:Write(state.priority .. ' | ' .. state.visibility)
+		if string.find(state.entityName, 'VE') then --entityName e.g. Levels/XP1_001/Lighting/VE_XP_001
+			self.m_DefaultState = state
+			m_Logger:Write("Found Default Entity")
+		end
 
 		for i,priority in pairs(args) do
 			if state.priority == priority then
@@ -1194,8 +1207,34 @@ function VEEditor:CreateGUI()
 			self.m_PresetName = p_PresetName
 		end)
 
-		DebugGUI:Button('Print Preset', function(value)
+		DebugGUI:Button('Print Preset', function(p_Value)
 			print(self:ParseJSON())
+		end)
+
+		DebugGUI:Button('Reset to Default', function(p_Value)
+			if self.m_ResetConfirmed then
+				m_Logger:Write('CineState Name: ' .. self.m_CineState.entityName)
+				m_Logger:Write('CineState ID: ' .. self.m_CineState.stateId)
+				m_Logger:Write('CineState Priority: ' .. self.m_CineState.priority)
+
+				for l_Index, l_Class in pairs(self.m_SupportedClasses) do
+					m_Logger:Write("Class: " .. l_Class)
+					local s_LoweredClass = firstToLower(l_Class)
+					if self.m_DefaultState[s_LoweredClass] ~= nil and s_LoweredClass ~= 'enlighten' then
+						self.m_CineState[s_LoweredClass] = self.m_DefaultState[s_LoweredClass]:Clone()
+					elseif self.m_DefaultState[s_LoweredClass] == nil and s_LoweredClass == "characterLighting" then
+						self.m_CineState[s_LoweredClass].characterLightEnable = false
+					elseif self.m_DefaultState[s_LoweredClass] == nil and self.m_CineState[s_LoweredClass] ~= nil then
+						self.m_CineState[s_LoweredClass].enable = false
+					end
+				end
+				VisualEnvironmentManager:SetDirty(true)
+			end
+		end)
+
+		-- Reset Button
+		DebugGUI:Checkbox('Confirm Reset to Default', false, function(p_Value)
+			self.m_ResetConfirmed = p_Value
 		end)
 	end)
 end
