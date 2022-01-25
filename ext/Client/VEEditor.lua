@@ -1218,10 +1218,11 @@ function VEEditor:CreateGUI()
 	-- Utilities
 	DebugGUI:Folder("Utilities", function ()
 
-		DebugGUI:Text('Load Preset', 'Insert JSON String here', function(p_Preset)
+		DebugGUI:Button('Restore last Autosave', function(p_Value)
 			if self.m_CineState ~= nil then
 				self.m_CineState = nil
-				local s_Decoded = json.decode(p_Preset)
+				local s_PresetSetting = SettingsManager:GetSetting('VEEditor_AutoSave')
+				local s_Decoded = json.decode(s_PresetSetting.value)
 				Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')
 				s_Decoded.Name = "EditorLayer"
 				s_Decoded.Priority = 10
@@ -1231,11 +1232,10 @@ function VEEditor:CreateGUI()
 			end
 		end)
 
-		DebugGUI:Button('Restore last Autosave', function(p_Value)
+		DebugGUI:Text('Load Preset', 'Insert JSON String here', function(p_Preset)
 			if self.m_CineState ~= nil then
 				self.m_CineState = nil
-				local s_PresetSetting = SettingsManager:GetSetting('VEEditor_AutoSave')
-				local s_Decoded = json.decode(s_PresetSetting.value)
+				local s_Decoded = json.decode(p_Preset)
 				Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')
 				s_Decoded.Name = "EditorLayer"
 				s_Decoded.Priority = 10
