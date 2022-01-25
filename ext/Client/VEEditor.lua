@@ -110,7 +110,7 @@ function VEEditor:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 		s_LastUpdate = s_Time
 		s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
 		s_FirstRun = false
-	elseif s_Time > s_NextUpdate and self.m_CineState ~= nil then
+	elseif s_Time > s_NextUpdate and self.m_CineState ~= nil and not self.m_ResetConfirmed then
 		if SettingsManager:GetSetting("VEEditor_AutoSave") ~= nil then
 			SettingsManager:DeleteSetting("VEEditor_AutoSave")
 		end
@@ -1276,6 +1276,7 @@ function VEEditor:CreateGUI()
 				end
 				VisualEnvironmentManager:SetDirty(true)
 			end
+			self.m_ResetConfirmed = false
 		end)
 
 		-- Reset Button
