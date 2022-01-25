@@ -49,6 +49,7 @@ function VEEditor:RegisterVars()
 	self.VALUE_STEP = 0.0001
 	self.VALUE_MIN = -25000
 	self.VALUE_MAX = 25000
+	self.AUTOSAVE_EVERY_S = 60
 	self.m_CineStateReloaded = false
 	self.m_ResetConfirmed = false
 end
@@ -56,6 +57,7 @@ end
 function VEEditor:RegisterEvents()
 	Events:Subscribe('VEManager:PresetsLoaded', self, self.OnPresetsLoaded)
 	Events:Subscribe('VEManager:AnswerVEGuidRequest', self, self.OnVEGuidReceived)
+	Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
 	NetEvents:Subscribe('VEEditor:DataToClient', self, self.OnDataFromServer)
 	NetEvents:Subscribe('VEEditor:ShowUI', self, self.ShowUI)
 	NetEvents:Subscribe('VEEditor:HideUI', self, self.HideUI)
@@ -82,14 +84,41 @@ function VEEditor:OnPresetsLoaded()
 	end
 end
 
+---@param p_Guid Guid
 function VEEditor:OnVEGuidReceived(p_Guid)
 	self.m_CineEntityGUID = p_Guid
 	self.m_CineVE = ResourceManager:SearchForInstanceByGuid(self.m_CineEntityGUID)
 end
 
+---@param p_Path string
+---@param p_Value any
+---@param p_Net boolean
 function VEEditor:OnDataFromServer(p_Path, p_Value, p_Net)
 	if self.m_CollaborationEnabled == true then
 		self:GenericCallback(p_Path, p_Value, p_Net)
+	end
+end
+
+--TODO: Replace with Database System
+local s_LastUpdate = 0
+local s_NextUpdate = 0
+local s_Time = 0
+local s_FirstRun = true
+function VEEditor:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+	s_Time = s_Time + p_DeltaTime
+	if s_FirstRun then
+		s_LastUpdate = s_Time
+		s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
+		s_FirstRun = false
+	elseif s_Time > s_NextUpdate and self.m_CineState ~= nil then
+		if SettingsManager:GetSetting("VEEditor_AutoSave") ~= nil then
+			SettingsManager:DeleteSetting("VEEditor_AutoSave")
+		end
+		self.lastAutoSave = self:ParseJSON()
+		SettingsManager:DeclareString("VEEditor_AutoSave",self.lastAutoSave, 0, 50000, {displayName = "VEEditor Auto-Save", showInUi = false})
+		s_LastUpdate = s_Time
+		s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
+		ChatManager:SendMessage("Autosaved at time: " .. p_DeltaTime)
 	end
 end
 
@@ -1190,13 +1219,30 @@ function VEEditor:CreateGUI()
 	DebugGUI:Folder("Utilities", function ()
 
 		DebugGUI:Text('Load Preset', 'Insert JSON String here', function(p_Preset)
-			local s_Decoded = json.decode(p_Preset)
-			Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')
-			s_Decoded.Name = "EditorLayer"
-			s_Decoded.Priority = 10
-			Events:Dispatch('VEManager:ReplaceVE', 'EditorLayer', s_Decoded)
-			Events:Dispatch('VEManager:Reinitialize')
-			self.m_CineStateReloaded = true
+			if self.m_CineState ~= nil then
+				self.m_CineState = nil
+				local s_Decoded = json.decode(p_Preset)
+				Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')
+				s_Decoded.Name = "EditorLayer"
+				s_Decoded.Priority = 10
+				Events:Dispatch('VEManager:ReplaceVE', 'EditorLayer', s_Decoded)
+				Events:Dispatch('VEManager:Reinitialize')
+				self.m_CineStateReloaded = true
+			end
+		end)
+
+		DebugGUI:Button('Restore last Autosave', function(p_Value)
+			if self.m_CineState ~= nil then
+				self.m_CineState = nil
+				local s_PresetSetting = SettingsManager:GetSetting('VEEditor_AutoSave')
+				local s_Decoded = json.decode(s_PresetSetting.value)
+				Events:Dispatch('VEManager:DestroyVE', 'EditorLayer')
+				s_Decoded.Name = "EditorLayer"
+				s_Decoded.Priority = 10
+				Events:Dispatch('VEManager:ReplaceVE', 'EditorLayer', s_Decoded)
+				Events:Dispatch('VEManager:Reinitialize')
+				self.m_CineStateReloaded = true
+			end
 		end)
 
 		DebugGUI:Checkbox('Enable Collaboration Mode', false, function(p_Value)
