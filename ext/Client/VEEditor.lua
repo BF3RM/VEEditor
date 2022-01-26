@@ -103,22 +103,35 @@ end
 local s_LastUpdate = 0
 local s_NextUpdate = 0
 local s_Time = 0
+local s_LastSecond = 0
+local s_TimeUntilSave = 0
 local s_FirstRun = true
 function VEEditor:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	s_Time = s_Time + p_DeltaTime
-	if s_FirstRun then
-		s_LastUpdate = s_Time
-		s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
-		s_FirstRun = false
-	elseif s_Time > s_NextUpdate and self.m_CineState ~= nil and not self.m_ResetConfirmed then
-		if SettingsManager:GetSetting("VEEditor_AutoSave") ~= nil then
-			SettingsManager:DeleteSetting("VEEditor_AutoSave")
+	if s_Time >= s_LastSecond + 1 then
+		s_LastSecond = s_LastSecond + 1
+		if s_FirstRun then
+			s_LastUpdate = s_Time
+			s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
+			s_FirstRun = false
 		end
-		self.lastAutoSave = self:ParseJSON()
-		SettingsManager:DeclareString("VEEditor_AutoSave",self.lastAutoSave, 0, 50000, {displayName = "VEEditor Auto-Save", showInUi = false})
-		s_LastUpdate = s_Time
-		s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
-		ChatManager:SendMessage("Autosaved at time: " .. p_DeltaTime)
+
+		s_TimeUntilSave = s_NextUpdate - s_Time
+		s_TimeUntilSave = MathUtils:Round(s_TimeUntilSave)
+		if s_TimeUntilSave <= 4 then
+			if s_TimeUntilSave <= 0 and self.m_CineState ~= nil and not self.m_ResetConfirmed then
+				if SettingsManager:GetSetting("VEEditor_AutoSave") ~= nil then
+					SettingsManager:DeleteSetting("VEEditor_AutoSave")
+				end
+				self.lastAutoSave = self:ParseJSON()
+				SettingsManager:DeclareString("VEEditor_AutoSave",self.lastAutoSave, 0, 50000, {displayName = "VEEditor Auto-Save", showInUi = false})
+				s_LastUpdate = s_Time
+				s_NextUpdate = s_LastUpdate + self.AUTOSAVE_EVERY_S
+				m_Logger:Write("Autosaved at time: " .. MathUtils:Round(s_Time / 60) .. " Minutes")
+			else
+				ChatManager:SendMessage("Auto saving in: " .. s_TimeUntilSave)
+			end
+		end
 	end
 end
 
