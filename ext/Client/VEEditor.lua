@@ -126,7 +126,7 @@ function VEEditor:GetVisualEnvironmentState(...)
 	for _, state in pairs(states) do
 		m_Logger:Write(state.priority .. ' | ' .. state.visibility .. ' | ' .. state.entityName)
 
-		if string.find(state.entityName, 'VE') then --entityName e.g. Levels/XP1_001/Lighting/VE_XP_001
+		if string.find(state.entityName, 'VE') or string.find(state.entityName, 'Visual') then --entityName e.g. Levels/XP1_001/Lighting/VE_XP_001
 			self.m_DefaultState = state
 			m_Logger:Write("Found Default Entity")
 		end
@@ -1221,10 +1221,13 @@ function VEEditor:CreateGUI()
 					m_Logger:Write("Class: " .. l_Class)
 					local s_LoweredClass = firstToLower(l_Class)
 					if self.m_DefaultState[s_LoweredClass] ~= nil and s_LoweredClass ~= 'enlighten' then
+						m_Logger:Write("Grab Method 1 " .. l_Class)
 						self.m_CineState[s_LoweredClass] = self.m_DefaultState[s_LoweredClass]:Clone()
 					elseif self.m_DefaultState[s_LoweredClass] == nil and s_LoweredClass == "characterLighting" then
+						m_Logger:Write("Grab Method 2 " .. l_Class)
 						self.m_CineState[s_LoweredClass].characterLightEnable = false
-					elseif self.m_DefaultState[s_LoweredClass] == nil and self.m_CineState[s_LoweredClass] ~= nil then
+					elseif self.m_DefaultState[s_LoweredClass] == nil and self.m_CineState[s_LoweredClass] ~= nil and s_LoweredClass ~= "tonemap" then
+						m_Logger:Write("Grab Method 3 " .. l_Class)
 						self.m_CineState[s_LoweredClass].enable = false
 					end
 				end
