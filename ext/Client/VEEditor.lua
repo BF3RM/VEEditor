@@ -184,7 +184,7 @@ function VEEditor:GenericCallback(p_Path, p_Value, p_Net)
 		if p_Value.typeInfo and p_Value.typeInfo.name == 'TextureAsset' then
 			m_Logger:Write('TextureAsset found')
 
-			if s_PathTable[1] == 'sky' then
+			if s_PathTable[1] == 'sky' or s_PathTable[1] == 'outdoorLight' then
 				Events:Dispatch("VEManager:ApplyTexture", "EditorLayer", self.selectedTexture.instanceGuid, s_PathTable[2])
 			else
 				error('Faulty Texture')
