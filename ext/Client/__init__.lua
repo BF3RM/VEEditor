@@ -9,10 +9,15 @@ local m_Editor = require('VEEditor')
 -- require DebugGUI Client Script
 local m_DebugGUI = require('DebugGUI')
 
-Events:Subscribe('Level:LoadResources', function(levelName, gameMode, isDedicatedServer)
+g_TextureAssets = {}
+local m_CurrentMap
+Events:Subscribe('Level:LoadResources', function(p_LevelName, p_GameMode, p_IsDedicatedServer)
     -- Send Preset to VEManager
 	Events:Dispatch('VEManager:RegisterPreset', 'EditorLayer', m_EditorLayer)
-	g_TextureAssets = {}
+	if m_CurrentMap ~= p_LevelName then
+		g_TextureAssets = {}
+	end
+	m_CurrentMap = p_LevelName
 end)
 
 Events:Subscribe('Partition:Loaded', function(p_Partition)
