@@ -1084,53 +1084,33 @@ function VEEditor:CreateGUI()
 
 		DebugGUI:Text('Manual Texture by Name', 'Enter Name here', function(p_TextureName)
 			for l_Key, l_Value in pairs(g_TextureAssets) do
-				if string.find(l_Key, p_TextureName) then
-					self.selectedTexture = TextureAsset(l_Value)
+				if string.find(l_Value, p_TextureName) then
+					self.selectedTexture = TextureAsset(ResourceManager:SearchForDataContainer(l_Value))
 				end
 			end
 		end)
 
 		DebugGUI:Text('Search Loaded Textures', 'Enter Search Parameter here', function(p_SearchParameter)
 			print("*-- Search Start --")
-			for l_Key, l_Value in pairs(g_TextureAssets) do
-				if string.find(l_Key, p_SearchParameter) then
-					print("Matching Texture: " .. l_Key)
+			for l_Key, l_Value in ipairs(g_TextureAssets) do
+				if string.find(l_Value, p_SearchParameter) then
+					print("Matching Texture: " .. l_Value)
 				end
 			end
 			print("*-- Search End --")
 		end)
 
-		DebugGUI:Range('Loaded Texture index', {DefValue = 0, Min = 1, Max = 500, Step = 1}, function(p_Value)
-			-- Make sure value is int
-			p_Value = math.floor(p_Value)
-
-			-- Count saved loaded textures
-			local counter = 0
-			for _, l_Value in pairs(g_TextureAssets) do
-				counter = counter + 1
-			end
-
-			if counter > 0 then
-				-- Find/Select a texture
-				p_Value = math.fmod(p_Value, counter)
-
-				counter = 0
-				for l_Key, l_Value in pairs(g_TextureAssets) do
-					counter = counter + 1
-
-					if counter == p_Value then
-						m_Logger:Write("Selected Texture index " .. tostring(p_Value) .. " (" .. l_Key .. ")" )
-						self.selectedTexture = TextureAsset(l_Value)
-					end
-				end
-			else
-				m_Logger:Write("No loaded textures have been saved!" )
-			end
-		end)
-
 		self.selectedTextureDestination = 'sky.panoramicTexture' -- Default value
 		DebugGUI:Text('Texture Destination', 'sky.panoramicTexture', function(p_Destination)
 			self.selectedTextureDestination = p_Destination
+		end)
+
+		DebugGUI:Button('Print All Textures', function(p_Value)
+			print("*-- List Start --")
+			for l_Key, l_Value in ipairs(g_TextureAssets) do
+				print(l_Value)
+			end
+			print("*-- List Start --")
 		end)
 
 		DebugGUI:Button('Apply Texture', function(p_Value)

@@ -12,14 +12,8 @@ local m_DebugGUI = require('DebugGUI')
 Events:Subscribe('Level:LoadResources', function(levelName, gameMode, isDedicatedServer)
     -- Send Preset to VEManager
 	Events:Dispatch('VEManager:RegisterPreset', 'EditorLayer', m_EditorLayer)
+	g_TextureAssets = {}
 end)
-
-Events:Subscribe('Level:Destroy', function()
-    	g_TextureAssets = {}
-end)
-
--- Grab Textures from Partitions
-g_TextureAssets = {}
 
 Events:Subscribe('Partition:Loaded', function(p_Partition)
 	if p_Partition.primaryInstance:Is('TextureAsset') then
@@ -28,11 +22,11 @@ Events:Subscribe('Partition:Loaded', function(p_Partition)
 		for _, l_Parameter in pairs(VEE_CONFIG.SEARCH_PARAMETERS_FOR_TEXTURES) do
 
 			if string.find(name, l_Parameter) then
-
-				m_Logger:Write("Loaded TextureAsset: " .. name)
-				-- Save texture in the list
-				g_TextureAssets[name] = p_Partition.primaryInstance
+				m_Logger:Write("Saved TextureAsset: " .. name)
+				-- Save texture name in the list
+				table.insert(g_TextureAssets, name)
 			end
 		end
 	end
 end)
+
