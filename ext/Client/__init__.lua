@@ -14,6 +14,10 @@ Events:Subscribe('Level:LoadResources', function(levelName, gameMode, isDedicate
 	Events:Dispatch('VEManager:RegisterPreset', 'EditorLayer', m_EditorLayer)
 end)
 
+Events:Subscribe('Level:Destroy', function()
+    	g_TextureAssets = {}
+end)
+
 -- Grab Textures from Partitions
 g_TextureAssets = {}
 
