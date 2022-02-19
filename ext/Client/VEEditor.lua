@@ -1085,6 +1085,7 @@ function VEEditor:CreateGUI()
 		DebugGUI:Text('Manual Texture by Name', 'Enter Name here', function(p_TextureName)
 			for l_Key, l_Value in pairs(g_TextureAssets) do
 				if string.find(l_Value, p_TextureName) then
+					l_Value = l_Value:lower()
 					self.selectedTexture = TextureAsset(ResourceManager:SearchForDataContainer(l_Value))
 				end
 			end
