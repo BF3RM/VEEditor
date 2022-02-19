@@ -51,6 +51,7 @@ function VEEditor:RegisterVars()
 	self.VALUE_MAX = 25000
 	self.m_CineStateReloaded = false
 	self.m_ResetConfirmed = false
+	self.m_IsMapSpecific = true
 end
 
 function VEEditor:RegisterEvents()
@@ -1188,6 +1189,10 @@ function VEEditor:CreateGUI()
 			self.m_PresetName = p_PresetName
 		end)
 
+		DebugGUI:Checkbox('Preset is Map Specific', true, function(p_Value)
+			self.m_IsMapSpecific = p_Value
+		end)
+
 		DebugGUI:Button('Print Preset', function(p_Value)
 			print(self:ParseJSON())
 		end)
@@ -1261,7 +1266,7 @@ function VEEditor:ParseJSON()
 
 					if IsBasicType(s_Type) then
 						s_Value = self:ParseValue(s_Type, self.m_CineState[firstToLower(l_Class)][firstToLower(s_FieldName)])
-					elseif s_Type == "TextureAsset" then
+					elseif s_Type == "TextureAsset" and self.m_IsMapSpecific then
 						s_Value = "\"" .. TextureAsset(self.m_CineState[firstToLower(l_Class)][firstToLower(s_FieldName)]).name .. "\""
 					elseif l_Field.typeInfo.enum then
 						s_Value = "\"" .. tostring(self.m_CineState[firstToLower(l_Class)][firstToLower(s_FieldName)]) .. "\""
