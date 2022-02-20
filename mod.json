@@ -3,11 +3,11 @@
 	"Authors": ["IllustrisJack", "Lesley", "GreatApo", "Breaknix"],
 	"Description": "Tool to edit & save visual environments",
 	"URL": "https://github.com/BF3RM/VEEditor",
-	"Version": "0.2.1",
+	"Version": "0.3.0",
 	"HasWebUI": true,
 	"HasVeniceEXT": true,
 	"Tags": ["ve-editor"],
 	"Dependencies": {
-		"VEManager": "^0.2.6"
+		"VEManager": "^0.2.7"
 	}
 }
