@@ -1197,6 +1197,16 @@ function VEEditor:CreateGUI()
 			print(self:ParseJSON())
 		end)
 
+		DebugGUI:Button('Print Preset (ebx format)', function(p_Value)
+			if self.m_CineState == nil then print("Failed.") return end
+
+			if self.m_PresetName == nil then
+				self.m_PresetName = "VEEditor/New_Preset"
+			end
+
+			DumpVEPreset(self.m_CineState, self.m_PresetName, self.m_SupportedClasses)
+		end)
+
 		DebugGUI:Button('Reset to Default', function(p_Value)
 			if self.m_ResetConfirmed then
 				m_Logger:Write('CineState Name: ' .. self.m_CineState.entityName)
