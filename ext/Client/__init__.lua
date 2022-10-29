@@ -1,5 +1,7 @@
 local m_Logger = Logger("Init", false)
 
+require("PartitionDumper")
+
 -- require editorLayer Preset
 local m_EditorLayer = require('EditorLayer')
 
