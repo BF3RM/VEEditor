@@ -8,6 +8,6 @@
 	"HasVeniceEXT": true,
 	"Tags": ["ve-editor"],
 	"Dependencies": {
-		"VEManager": "0.2.7"
+		"VEManager": "^0.2.7"
 	}
 }
